@@ -140,14 +140,21 @@ def przyjmowanieRozwiazania(prawdopodobienstwo):
     if check < prawdopodobienstwo:
         return True
 
+
+def findMin(solutions):
+    mini = []
+    for element in solutions:
+        mini.append(element[0])
+    return min(mini)
+
             
 start_time = time.time()
 
-liczba_hetmanow_na_szachownicy = 5
+liczba_hetmanow_na_szachownicy = 6
 rozmiar_szachownicy = 5
 T = 4000
 liczba_prób = 15
-liczba_epok = 3000
+liczba_epok = 2000
 wspolczynnik = 0.95
 rozwiazania = []
 
@@ -173,12 +180,12 @@ for epoka in range(liczba_epok):
 
     T *= wspolczynnik
 
-
+minimum = findMin(rozwiazania)
 for element in rozwiazania:
-    if element[0] == 0:
+    if element[0] == minimum:
         print("\nŚrednia: ", element[0])
         print("Oczekiwane rozmieszczenie hetmanów:")
         for row in element[1]:
             print(row)
 
-print("--- %s seconds ---" % (time.time() - start_time))
+print("\n--- %s seconds ---" % (time.time() - start_time))
