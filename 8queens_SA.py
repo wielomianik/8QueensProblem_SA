@@ -2,121 +2,123 @@ import numpy as np
 import time
 
 
-def funkcjaCelu(hetmany, rozmiar, liczba_hetmanow):
+def goalFunction(queens, size, queensAmmount):
 
-    s = 0
-    for i in range(rozmiar):    #kolumny
-        for j in range(rozmiar):    #wiersze
+    s = 0                            #sum
+    for i in range(size):            #columns
+        for j in range(size):        #rows
 
-            if hetmany[i][j] == 0:
+            if queens[i][j] == 0:
                 continue
             else:
-                for k in range(rozmiar):
-                    s += hetmany[i][k] + hetmany[k][j]
+
+                for k in range(size):
+                    s += queens[i][k] + queens[k][j]
                 s -= 2
                 k = 1
 
                 while i - k >= 0 and j - k >= 0:
-                    s += hetmany[i - k][j - k]
-                    k+=1
-                k = 1
-
-                while i + k <= rozmiar - 1 and j + k <= rozmiar - 1:
-                    s += hetmany[i + k][j + k]
+                    s += queens[i - k][j - k]
                     k += 1
                 k = 1
 
-                while i - k >= 0 and j + k <= rozmiar - 1:
-                    s += hetmany[i - k][j + k]
+                while i + k <= size - 1 and j + k <= size - 1:
+                    s += queens[i + k][j + k]
                     k += 1
                 k = 1
 
-                while i + k <= rozmiar - 1 and j - k >= 0:
-                    s += hetmany[i + k][j - k]
+                while i - k >= 0 and j + k <= size - 1:
+                    s += queens[i - k][j + k]
+                    k += 1
+                k = 1
+
+                while i + k <= size - 1 and j - k >= 0:
+                    s += queens[i + k][j - k]
                     k += 1
 
-    return s / liczba_hetmanow
+    return s / queensAmmount
 
 
-def losowanieX(liczba_hetmanow, rozmiar):
+def randomX(queensAmmount, size):   #Generating matrix with random queens arrangement
 
-    indeksy = [i for i in range(rozmiar ** 2)]
-    hetmany = [0 for i in range(rozmiar ** 2)]
+    indexes = [i for i in range(size ** 2)]
+    queens = [0 for i in range(size ** 2)]
 
-    unikalne_indeksy = []
-    while len(unikalne_indeksy) != liczba_hetmanow:
-        losowana = np.random.choice(indeksy)
-        if losowana not in unikalne_indeksy:
-            unikalne_indeksy.append(losowana)
+    unique_indexes = []
+    while len(unique_indexes) != queensAmmount:
+
+        drawn_number = np.random.choice(indexes)
+        if drawn_number not in unique_indexes:
+            unique_indexes.append(drawn_number)
     
-    for element in unikalne_indeksy:
-        hetmany[element] = 1
+    for element in unique_indexes:
+        queens[element] = 1
 
-    hetmany = np.array(hetmany)
-    hetmany = list(hetmany.reshape(rozmiar, rozmiar))
-    hetmany = [list(i) for i in hetmany]
+    queens = np.array(queens)
+    queens = list(queens.reshape(size, size))
+    queens = [list(i) for i in queens]
 
-    return hetmany
+    return queens
 
 
-def wybierzLosoweX(hetmany):
+def chooseRandomX(queens):  #I choose a random solution located near the initial one.
     
-    '''print("\nRozwiązanie początkowe X: ")
-    for row in hetmany:
+    '''print("\nInitial solution X: ")
+    for row in queens:
         print(row)'''
     
-    rozmiar_tablicy = len(hetmany)
-    for i in range(rozmiar_tablicy - 1):
-        for j in range(rozmiar_tablicy - 1):
+    queens_size = len(queens)
+    for i in range(queens_size - 1):
+        for j in range(queens_size - 1):
 
-            if hetmany[i][j] == 1:
+            if queens[i][j] == 1:
 
-                if hetmany[i][j + 1] == 0:
+                if queens[i][j + 1] == 0:
 
-                    hetmany[i][j + 1] = 1
-                    hetmany[i][j] = 0
+                    queens[i][j + 1] = 1
+                    queens[i][j] = 0
                     break
 
-                if hetmany[i][j - 1] == 0:
+                if queens[i][j - 1] == 0:
 
-                    hetmany[i][j - 1] = 1
-                    hetmany[i][j] = 0
+                    queens[i][j - 1] = 1
+                    queens[i][j] = 0
                     break
                 
-                if hetmany[i + 1][j] == 0:
+                if queens[i + 1][j] == 0:
                     
-                    hetmany[i + 1][j] = 1
-                    hetmany[i][j] = 0
+                    queens[i + 1][j] = 1
+                    queens[i][j] = 0
                     break
 
-                if hetmany[i + 1][j - 1] == 0:
+                if queens[i + 1][j - 1] == 0:
 
-                    hetmany[i + 1][j - 1] = 1
-                    hetmany[i][j] = 0
+                    queens[i + 1][j - 1] = 1
+                    queens[i][j] = 0
                     break
                     
-                if hetmany[i + 1][j + 1] == 0:
+                if queens[i + 1][j + 1] == 0:
 
-                    hetmany[i + 1][j + 1] = 1
-                    hetmany[i][j] = 0
+                    queens[i + 1][j + 1] = 1
+                    queens[i][j] = 0
                     break
                     
-                if hetmany[i - 1][j] == 0:
+                if queens[i - 1][j] == 0:
 
-                    hetmany[i - 1][j] = 1
-                    hetmany[i][j] = 0
+                    queens[i - 1][j] = 1
+                    queens[i][j] = 0
                     break
                     
-                if hetmany[i][j + 1] == 0:
+                if queens[i][j + 1] == 0:
 
-                    hetmany[i][j + 1] = 1
-                    hetmany[i][j] = 0
+                    queens[i][j + 1] = 1
+                    queens[i][j] = 0
                     break
                     
-                if hetmany[i][j + 1] == 0:
+                if queens[i][j + 1] == 0:
 
-                    hetmany[i][j + 1] = 1
-                    hetmany[i][j] = 0
+                    queens[i][j + 1] = 1
+                    queens[i][j] = 0
                     break
         
         else:
@@ -124,67 +126,67 @@ def wybierzLosoweX(hetmany):
         break
                     
 
-    '''print("\nLosowe rozwiązanie X' znajdujące się w pobliżu X: ")
-    for row in hetmany:
+    '''print("\nRandom solution X' located nearby X: ")
+    for row in queens:
         print(row)'''
 
-    return hetmany
+    return queens
 
 
-def funkcjaBoltzmanna(x, xPrim, temperatura):
-    return np.e ** ((x - xPrim)/temperatura)
+def boltzmannFunction(x, xPrim, temperature):
+    return np.e ** ((x - xPrim)/temperature)
 
 
-def przyjmowanieRozwiazania(prawdopodobienstwo):
+def acceptingSolution(probability):
     check = np.random.uniform(0,1)
-    if check < prawdopodobienstwo:
+    if check < probability:
         return True
 
 
 def findMin(solutions):
-    mini = []
+    minimum = []
     for element in solutions:
-        mini.append(element[0])
-    return min(mini)
+        minimum.append(element[0])
+    return min(minimum)
 
             
 start_time = time.time()
 
-liczba_hetmanow_na_szachownicy = 6
-rozmiar_szachownicy = 5
+queensOnBoard = 8                       #Variables needed for the algorithm
+boardSize = 8
 T = 4000
-liczba_prób = 15
-liczba_epok = 2000
-wspolczynnik = 0.95
-rozwiazania = []
+triesNumber = 8
+epochsNumber = 20000
+coefficient = 0.99
+solutions = []
 
 
-for epoka in range(liczba_epok):
-    for proba in range(liczba_prób):
+for epoka in range(epochsNumber):       #Execution of simulated annealing algorithm
+    for proba in range(triesNumber):
 
-        hetmany = losowanieX(liczba_hetmanow_na_szachownicy, rozmiar_szachownicy)
-        hetmanyPrim = wybierzLosoweX(hetmany)
-        avg_het = funkcjaCelu(hetmany, rozmiar_szachownicy, liczba_hetmanow_na_szachownicy)
-        avg_het_prim = funkcjaCelu(hetmanyPrim, rozmiar_szachownicy, liczba_hetmanow_na_szachownicy)
+        queens = randomX(queensOnBoard, boardSize)
+        queensPrim = chooseRandomX(queens)
+        avg_het = goalFunction(queens, boardSize, queensOnBoard)
+        avg_het_prim = goalFunction(queensPrim, boardSize, queensOnBoard)
 
         if avg_het_prim < avg_het:
-            rozwiazania.append([avg_het_prim, hetmanyPrim])
+            solutions.append([avg_het_prim, queensPrim])
         else:
-            prob = funkcjaBoltzmanna(avg_het, avg_het_prim, T)
-            check = przyjmowanieRozwiazania(prob)
+            prob = boltzmannFunction(avg_het, avg_het_prim, T)
+            check = acceptingSolution(prob)
 
             if check:
-                rozwiazania.append([avg_het_prim, hetmanyPrim])
+                solutions.append([avg_het_prim, queensPrim])
             else:
-                rozwiazania.append([avg_het, hetmany])
+                solutions.append([avg_het, queens])
 
-    T *= wspolczynnik
+    T *= coefficient
 
-minimum = findMin(rozwiazania)
-for element in rozwiazania:
+minimum = findMin(solutions)
+for element in solutions:
     if element[0] == minimum:
-        print("\nŚrednia: ", element[0])
-        print("Oczekiwane rozmieszczenie hetmanów:")
+        print("\nAverage: ", element[0])
+        print("Expected queen placement:")
         for row in element[1]:
             print(row)
 
